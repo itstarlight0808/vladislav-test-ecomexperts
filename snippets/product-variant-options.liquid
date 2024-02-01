@@ -25,6 +25,7 @@
 
 {%- for value in option.values -%}
   {%- liquid
+    assign current_variant = product.variants | where: 'title', value | first
     assign option_disabled = true
 
     for option1_name in variants_option1_arr
@@ -60,7 +61,13 @@
       {% endif %}
     >
     <label for="{{ section.id }}-{{ option.position }}-{{ forloop.index0 }}">
-      {{ value -}}
+      {%- if current_variant -%}
+        {{ current_variant.featured_image | image_url: width: 40, height: 60 | image_tag:
+            loading: 'lazy'
+        }}
+      {%- else -%}
+        {{ value -}}
+      {%- endif -%}
       <span class="visually-hidden">{{ 'products.product.variant_sold_out_or_unavailable' | t }}</span>
     </label>
   {%- elsif block.settings.picker_type == 'dropdown' -%}
