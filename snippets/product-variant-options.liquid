@@ -25,9 +25,22 @@
 
 {%- for value in option.values -%}
   {%- liquid
-    assign current_variant = product.variants | where: 'title', value | first
-    assign option_disabled = true
+    assign variant_image_by_color = false
+    if option.name == 'Color'
+      for variant in product.variants
+        for option in variant.options
+          if option == value
+            assign variant_image_by_color = variant
+            break
+          endif
+        endfor
+        if variant_image_by_color
+          break
+        endif
+      endfor
+    endif
 
+    assign option_disabled = true
     for option1_name in variants_option1_arr
       case option.position
         when 1
@@ -75,8 +88,8 @@
       {% endif %}
     >
     <label for="{{ section.id }}-{{ option.position }}-{{ forloop.index0 }}">
-      {%- if current_variant.featured_image -%}
-        {{ current_variant.featured_image | image_url: width: 40, height: 60 | image_tag:
+      {%- if variant_image_by_color.featured_image -%}
+        {{ variant_image_by_color.featured_image | image_url: width: 40, height: 60 | image_tag:
             loading: 'lazy'
         }}
       {%- else -%}
