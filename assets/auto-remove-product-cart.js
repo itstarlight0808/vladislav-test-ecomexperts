@@ -13,24 +13,7 @@ const autoRemoveProduct = (productVariantId) => { // when user clicks remove car
 
         if (hasSoftWinterJacket) {
           // Remove Winter Jacket from the cart
-          fetch('/cart/update.js', {
-            method: 'POST',
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              updates: {
-                [softWinterJacketVariantId]: 0
-              }
-            })
-          }).then(response => response.json())
-          .then(cartItem => {
-            document.querySelector(`cart-remove-button[data-variant-id="${softWinterJacketVariantId}"]`).click();
-            console.log('Winter Jacket was removed from the cart:', cartItem);
-          })
-          .catch(error => {
-              console.error('Error removing Winter Jacket from cart:', error);
-          });
+          document.querySelector(`cart-remove-button[data-variant-id="${softWinterJacketVariantId}"]`).click();
         }
     });
 };
