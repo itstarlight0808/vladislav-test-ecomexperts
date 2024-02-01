@@ -949,8 +949,11 @@ class VariantSelectors extends HTMLElement {
   constructor() {
     super();
     this.addEventListener('change', this.onVariantChange);
-    this.querySelector(`select[name="options[Size]"]`).value = "Unselected"; // reset Size variant option as Unselected when the browser reloads.
-    this.onVariantChange();
+
+    document.addEventListener('DOMContentLoaded', () => {
+      this.querySelector(`select[name="options[Size]"]`).value = "Unselected"; // reset Size variant option as Unselected when the browser reloads.
+      this.onVariantChange();
+    })
   }
 
   onVariantChange() {
