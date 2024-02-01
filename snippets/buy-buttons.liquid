@@ -22,6 +22,13 @@
       if block.settings.show_dynamic_checkout and gift_card_recipient_feature_active == false
         assign show_dynamic_checkout = true
       endif
+
+      assign is_product_unavailable = false
+      for option in product.selected_or_first_available_variant.options
+        if option == 'Unselected'
+          assign is_product_unavailable = true
+        endif
+      endfor
     -%}
 
     <product-form
@@ -80,7 +87,7 @@
             type="submit"
             name="add"
             class="product-form__submit button button--full-width {% if show_dynamic_checkout %}button--secondary{% else %}button--primary{% endif %}"
-            {% if product.selected_or_first_available_variant.available == false or quantity_rule_soldout %}
+            {% if product.selected_or_first_available_variant.available == false or quantity_rule_soldout or is_product_unavailable %}
               disabled
             {% endif %}
           >
@@ -145,5 +152,6 @@
     </pickup-availability>
 
     <script src="{{ 'pickup-availability.js' | asset_url }}" defer="defer"></script>
+    <script src="{{ 'buy-buttons.js' | asset_url }}" defer="defer"></script>
   {%- endif -%}
 </div>

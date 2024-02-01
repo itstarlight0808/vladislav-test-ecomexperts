@@ -276,6 +276,8 @@
                           <cart-remove-button
                             id="Remove-{{ item.index | plus: 1 }}"
                             data-index="{{ item.index | plus: 1 }}"
+                            data-variant-id="{{ item.variant_id }}"
+                            onclick="autoRemoveProduct({{ item.variant_id }})"
                           >
                             <a
                               href="{{ item.url_to_remove }}"
@@ -449,6 +451,7 @@
     </form>
   </div>
 </cart-items>
+<script src="{{ 'auto-remove-product-cart.js' | asset_url }}" defer="defer"></script>
 
 {% schema %}
 {

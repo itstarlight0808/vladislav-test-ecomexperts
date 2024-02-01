@@ -945,10 +945,15 @@ class SlideshowComponent extends SliderComponent {
 
 customElements.define('slideshow-component', SlideshowComponent);
 
-class VariantSelects extends HTMLElement {
+class VariantSelectors extends HTMLElement {
   constructor() {
     super();
     this.addEventListener('change', this.onVariantChange);
+
+    document.addEventListener('DOMContentLoaded', () => {
+      this.querySelector(`select[name="options[Size]"]`).value = "Unselected"; // reset Size variant option as Unselected when the browser reloads.
+      this.onVariantChange();
+    })
   }
 
   onVariantChange() {
@@ -972,15 +977,21 @@ class VariantSelects extends HTMLElement {
   }
 
   updateOptions() {
-    this.options = Array.from(this.querySelectorAll('select'), (select) => select.value);
+    // in the case of select variant
+    const selectOptions = Array.from(this.querySelectorAll('select'), (select) => select.value);
+
+    // in the case of radio variant
+    const fieldsets = Array.from(this.querySelectorAll('fieldset'));
+    const radioOptions = fieldsets.map((fieldset) => {
+      return Array.from(fieldset.querySelectorAll('input')).find((radio) => radio.checked).value;
+    });
+    this.options = [ ...selectOptions, ...radioOptions ];
   }
 
   updateMasterId() {
     this.currentVariant = this.getVariantData().find((variant) => {
       return !variant.options
-        .map((option, index) => {
-          return this.options[index] === option;
-        })
+        .map((option) => this.options.includes(option))
         .includes(false);
     });
   }
@@ -1041,9 +1052,17 @@ class VariantSelects extends HTMLElement {
   setInputAvailability(listOfOptions, listOfAvailableOptions) {
     listOfOptions.forEach((input) => {
       if (listOfAvailableOptions.includes(input.getAttribute('value'))) {
+        // select variant
         input.innerText = input.getAttribute('value');
+
+        // radio variant
+        input.classList.remove('disabled');
       } else {
+        // select variant
         input.innerText = window.variantStrings.unavailable_with_option.replace('[value]', input.getAttribute('value'));
+        
+        // radio variant
+        input.classList.add('disabled');
       }
     });
   }
@@ -1160,7 +1179,7 @@ class VariantSelects extends HTMLElement {
 
     if (disable) {
       addButton.setAttribute('disabled', 'disabled');
-      if (text) addButtonText.textContent = text;
+      // if (text) addButtonText.textContent = text; 
     } else {
       addButton.removeAttribute('disabled');
       addButtonText.textContent = window.variantStrings.addToCart;
@@ -1198,32 +1217,7 @@ class VariantSelects extends HTMLElement {
   }
 }
 
-customElements.define('variant-selects', VariantSelects);
-
-class VariantRadios extends VariantSelects {
-  constructor() {
-    super();
-  }
-
-  setInputAvailability(listOfOptions, listOfAvailableOptions) {
-    listOfOptions.forEach((input) => {
-      if (listOfAvailableOptions.includes(input.getAttribute('value'))) {
-        input.classList.remove('disabled');
-      } else {
-        input.classList.add('disabled');
-      }
-    });
-  }
-
-  updateOptions() {
-    const fieldsets = Array.from(this.querySelectorAll('fieldset'));
-    this.options = fieldsets.map((fieldset) => {
-      return Array.from(fieldset.querySelectorAll('input')).find((radio) => radio.checked).value;
-    });
-  }
-}
-
-customElements.define('variant-radios', VariantRadios);
+customElements.define('variant-selectors', VariantSelectors);
 
 class ProductRecommendations extends HTMLElement {
   constructor() {
